@@ -46,7 +46,7 @@ function App() {
       newT[node] = [];
       nodesList.forEach((targetNode, colIndex) => {
         const weight = parseInt(matrix[rowIndex][colIndex]);
-        if (!isNaN(weight) && weight > 0) {
+        if (!isNaN(weight)) {
           edges.push({
             from: rowIndex + 1,
             to: colIndex + 1,
@@ -118,7 +118,8 @@ function App() {
       console.log(i + 1, ' changed: ', changed);
 
       if (i === nbS - 1 && changed.length !== 0) {
-        console.log('Présence d une boucle négative!!!');
+        alert("Présence d'une boucle négative!!!");
+        terminal={};
       }
     }
 
@@ -155,7 +156,6 @@ function App() {
                   ) : (
                     <input
                       type="number"
-                      min="0"
                       value={matrix[rowIndex][colIndex]}
                       onChange={(e) =>
                         handleInputChange(rowIndex, colIndex, e.target.value)

@@ -10,7 +10,7 @@ function App() {
   );
   const [t, setT] = useState({});
   const [startNode, setStartNode] = useState('A'); // Noeud de départ
-  const [terminal, setTerminal] = useState({});
+  const [terminalHistory, setTerminalHistory] = useState([]); // Historique des terminaux
 
   const handleInputChange = (rowIndex, colIndex, value) => {
     const updatedMatrix = matrix.map((row, i) =>
@@ -22,7 +22,7 @@ function App() {
   const addNode = () => {
     const newNode = String.fromCharCode(65 + nodesList.length); // Lettre suivante (A, B, C...)
     setNodesList([...nodesList, newNode]);
-    
+
     // Mettre à jour la matrice avec une nouvelle ligne et une nouvelle colonne pour le nœud
     const newMatrix = matrix.map(row => [...row, '']);
     newMatrix.push(Array(nodesList.length + 1).fill(''));
@@ -48,7 +48,7 @@ function App() {
       newT[node] = [];
       nodesList.forEach((targetNode, colIndex) => {
         const weight = parseInt(matrix[rowIndex][colIndex]);
-        if (!isNaN(weight)&&weight!==0) {
+        if (!isNaN(weight) && weight !== 0) {
           edges.push({
             from: rowIndex + 1,
             to: colIndex + 1,
@@ -100,7 +100,7 @@ function App() {
       }
       nbS++;
     }
-
+    let history = [];
     for (let i = 0; i < nbS; i++) {
       for (const key of changed) {
         t[key].forEach(([relatedKey, value]) => {
@@ -117,7 +117,7 @@ function App() {
 
       changed = tempchanged;
       tempchanged = [];
-      console.log(i + 1, ' changed: ', changed);
+      history.push({ step: i + 1, terminal: { ...terminal } });
 
       if (i === nbS - 1 && changed.length !== 0) {
         alert("Présence d'une boucle négative!!!");
@@ -125,8 +125,8 @@ function App() {
       }
     }
 
-    console.log('terminal: ', terminal);
-    setTerminal(terminal);
+    setTerminalHistory(history);
+    
   };
 
   useEffect(() => {
@@ -150,7 +150,7 @@ function App() {
     <tbody>
       {nodesList.map((node, rowIndex) => (
         <tr key={node}>
-          <td className="border border-gray-300 px-4 py-2">{node}</td>
+          <td className="border border-gray-300 px-4 py-2">{node}{' --->'}</td>
           {nodesList.map((_, colIndex) => (
             <td key={colIndex} className="border border-gray-300 px-2 py-2">
               {rowIndex === colIndex ? (
@@ -216,9 +216,32 @@ function App() {
     </div>
   </div>
   <div id="network" className="h-72 w-full border border-gray-300 mb-6"></div>
-  <pre className="text-left bg-gray-100 p-4 rounded">
-    terminal = {JSON.stringify(terminal, null, 2)}
-  </pre>
+  <div className="overflow-x-auto">
+    <table className="table-auto border-collapse border border-gray-300 mx-auto mb-6">
+      <thead>
+        <tr>
+          <th className="border border-gray-300 px-4 py-2 bg-gray-100">Step</th>
+          {nodesList.map((node) => (
+            <th key={node} className="border border-gray-300 px-4 py-2 bg-gray-100">
+              {node}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {terminalHistory.map((historyStep, index) => (
+          <tr key={index}>
+            <td className="border border-gray-300 px-4 py-2">{historyStep.step}</td>
+            {nodesList.map((node) => (
+              <td key={node} className="border border-gray-300 px-4 py-2">
+                {historyStep.terminal[node] || 'infinity'}
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
 </div>
 
   );

@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable no-loop-func */
 import React, { useState, useEffect } from 'react';
 import { DataSet, Network } from 'vis-network/standalone/esm/vis-network';
 
@@ -46,7 +48,7 @@ function App() {
       newT[node] = [];
       nodesList.forEach((targetNode, colIndex) => {
         const weight = parseInt(matrix[rowIndex][colIndex]);
-        if (!isNaN(weight)) {
+        if (!isNaN(weight)&&weight!==0) {
           edges.push({
             from: rowIndex + 1,
             to: colIndex + 1,
@@ -132,64 +134,93 @@ function App() {
   }, [nodesList, matrix]);
 
   return (
-    <div className="App">
-      <h1>Matrix Input</h1>
-      <table border="1" style={{ margin: '20px auto', borderCollapse: 'collapse' }}>
-        <thead>
-          <tr>
-            <th>From/To</th>
-            {nodesList.map((node) => (
-              <th key={node}>{node}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {nodesList.map((node, rowIndex) => (
-            <tr key={node}>
-              <td>{node}</td>
-              {nodesList.map((_, colIndex) => (
-                <td key={colIndex}>
-                  {rowIndex === colIndex ? (
-                    <div style={{ backgroundColor: '#ccc', width: '100%', height: '100%' }}>
-                      &nbsp;
-                    </div>
-                  ) : (
-                    <input
-                      type="number"
-                      value={matrix[rowIndex][colIndex]}
-                      onChange={(e) =>
-                        handleInputChange(rowIndex, colIndex, e.target.value)
-                      }
-                    />
-                  )}
-                </td>
-              ))}
-            </tr>
+<div className="App p-6">
+  <h1 className="text-2xl font-bold text-center mb-4">Matrix Input</h1>
+  <table className="table-auto border-collapse border border-gray-300 mx-auto mb-6">
+    <thead>
+      <tr>
+        <th className="border border-gray-300 px-4 py-2 bg-gray-100">From/To</th>
+        {nodesList.map((node) => (
+          <th key={node} className="border border-gray-300 px-4 py-2 bg-gray-100">
+            {node}
+          </th>
+        ))}
+      </tr>
+    </thead>
+    <tbody>
+      {nodesList.map((node, rowIndex) => (
+        <tr key={node}>
+          <td className="border border-gray-300 px-4 py-2">{node}</td>
+          {nodesList.map((_, colIndex) => (
+            <td key={colIndex} className="border border-gray-300 px-2 py-2">
+              {rowIndex === colIndex ? (
+                <div className="bg-gray-300 w-full h-full">&nbsp;</div>
+              ) : (
+                <input
+                  type="number"
+                  value={matrix[rowIndex][colIndex]}
+                  onChange={(e) =>
+                    handleInputChange(rowIndex, colIndex, e.target.value)
+                  }
+                  className="w-full p-2 border border-gray-300 rounded"
+                />
+              )}
+            </td>
           ))}
-        </tbody>
-      </table>
-      <button onClick={addNode}>Add Node</button>
-      <button onClick={removeNode} disabled={nodesList.length <= 1}>Remove Node</button>
-      <div style={{ marginTop: '20px' }}>
-        <label htmlFor="startNode">Start Node:</label>
-        <select
-          id="startNode"
-          value={startNode}
-          onChange={(e) => setStartNode(e.target.value)}
-        >
-          {nodesList.map((node) => (
-            <option key={node} value={node}>
-              {node}
-            </option>
-          ))}
-        </select>
-        <button onClick={calculateShortestPath}>Calculate Shortest Path</button>
-      </div>
-      <div id="network" style={{ height: '300px', width: '100%', marginTop: '20px' }}></div>
-      <pre style={{ textAlign: 'left', marginTop: '20px' }}>
-        terminal = {JSON.stringify(terminal, null, 2)}
-      </pre>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+  <div className="flex justify-center gap-4 mb-6">
+    <button
+      onClick={addNode}
+      className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+    >
+      Add Node
+    </button>
+    <button
+      onClick={removeNode}
+      disabled={nodesList.length <= 1}
+      className={`${
+        nodesList.length <= 1
+          ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
+          : 'bg-red-500 text-white hover:bg-red-600'
+      } px-4 py-2 rounded`}
+    >
+      Remove Node
+    </button>
+  </div>
+  <div className="mb-6">
+    <label htmlFor="startNode" className="block text-sm font-medium mb-2">
+      Start Node:
+    </label>
+    <div className="flex gap-4">
+      <select
+        id="startNode"
+        value={startNode}
+        onChange={(e) => setStartNode(e.target.value)}
+        className="border border-gray-300 p-2 rounded w-full"
+      >
+        {nodesList.map((node) => (
+          <option key={node} value={node}>
+            {node}
+          </option>
+        ))}
+      </select>
+      <button
+        onClick={calculateShortestPath}
+        className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+      >
+        Calculate Shortest Path
+      </button>
     </div>
+  </div>
+  <div id="network" className="h-72 w-full border border-gray-300 mb-6"></div>
+  <pre className="text-left bg-gray-100 p-4 rounded">
+    terminal = {JSON.stringify(terminal, null, 2)}
+  </pre>
+</div>
+
   );
 }
 
